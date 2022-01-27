@@ -35,6 +35,7 @@ namespace KRG::EntityModel
     {
         KRG_ASSERT( IsUnloaded() && !m_isMapInstantiated );
         KRG_ASSERT( m_entities.empty() && m_entityIDLookupMap.empty() );
+        KRG_ASSERT( m_entitiesToAdd.empty() && m_entitiesToRemove.empty() );
 
         #if KRG_DEVELOPMENT_TOOLS
         KRG_ASSERT( m_entitiesToHotReload.empty() );
@@ -294,8 +295,6 @@ namespace KRG::EntityModel
 
     void EntityMap::DestroyAllEntities()
     {
-        KRG_ASSERT( m_entitiesToAdd.empty() && m_entitiesToRemove.empty() );
-
         for ( auto& pEntity : m_entities )
         {
             KRG::Delete( pEntity );
