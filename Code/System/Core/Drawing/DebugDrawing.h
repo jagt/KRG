@@ -295,9 +295,11 @@ namespace KRG::Drawing
         // Draw a cone, originating at the transform, aligned to the -Y axis of the transform
         void DrawCone( Transform const& transform, Radians coneAngle, float length, Float4 const& color, float thickness = s_defaultLineThickness, DepthTestState depthTestState = DepthTestState::DisableDepthTest, Seconds TTL = -1 );
 
+        // Draw a cone originating at the start point, aligned to the specified
         inline void DrawCone( Float3 const& startPoint, Float3 const& direction, Radians coneAngle, float length, Float4 const& color, float thickness = s_defaultLineThickness, DepthTestState depthTestState = DepthTestState::DisableDepthTest, Seconds TTL = -1 )
         {
-            Transform const coneTransform( Quaternion::FromOrientationVector( direction ), startPoint );
+            Quaternion const orientation = Quaternion::FromRotationBetweenNormalizedVectors( Vector::WorldForward, Vector( direction ).GetNormalized3() );
+            Transform const coneTransform( orientation, startPoint );
             DrawCone( coneTransform, coneAngle, length, color, thickness, depthTestState, TTL );
         }
 

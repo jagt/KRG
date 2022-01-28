@@ -96,7 +96,7 @@
     <ClCompile Include="Renderers\ImguiRenderer.cpp">
       <Filter>Renderers</Filter>
     </ClCompile>
-    <ClCompile Include="Systems\WorldSystem_WorldRenderer.cpp">
+    <ClCompile Include="Systems\WorldSystem_Renderer.cpp">
       <Filter>WorldSystems</Filter>
     </ClCompile>
     <ClCompile Include="RendererRegistry.cpp" />
@@ -171,7 +171,7 @@
     <ClInclude Include="Shaders\ImguiShaders.h">
       <Filter>Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="Systems\WorldSystem_WorldRenderer.h">
+    <ClInclude Include="Systems\WorldSystem_Renderer.h">
       <Filter>WorldSystems</Filter>
     </ClInclude>
     <ClInclude Include="IRenderer.h" />

@@ -9,7 +9,7 @@
 #include "Engine/Core/Entity/EntitySerialization.h"
 #include "Engine/Core/Entity/EntitySystem.h"
 #include "System/Core/FileSystem/FileSystem.h"
-#include "System/Core/Math/Random.h"
+#include "System/Core/Math/Math.h"
 #include "System/Core/Logging/Log.h"
 
 #include "Game/Core/AI/Components/Component_AISpawn.h"

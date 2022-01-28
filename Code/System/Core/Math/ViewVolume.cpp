@@ -328,8 +328,20 @@ namespace KRG::Math
 
     OBB ViewVolume::GetOBB() const
     {
-        KRG_UNIMPLEMENTED_FUNCTION();
-        return OBB();
+        Radians const halfFOV = ( m_FOV / 2 );
+        float const volumeDepth = m_depthRange.GetLength();
+
+        float const halfX = Math::Tan( halfFOV.ToFloat() ) * m_depthRange.m_end;
+        float const halfY = volumeDepth / 2;
+        float const halfZ = halfX / GetAspectRatio();
+        Vector const extents( halfX, halfY, halfZ );
+
+        float const forwardOffset = m_depthRange.m_start + halfY;
+        Vector const center = m_viewPosition + ( m_viewForwardDirection * forwardOffset );
+
+        Quaternion const orientation = Matrix( m_viewRightDirection.GetNegated(), m_viewForwardDirection.GetNegated(), m_viewUpDirection ).GetRotation();
+
+        return OBB( center, extents, orientation );
     }
 
     void ViewVolume::SetDepthRange( FloatRange depthRange )

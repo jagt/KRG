@@ -109,6 +109,7 @@ namespace KRG::Render
         Threading::Mutex                                                m_mobilityUpdateListLock;               // Mobility switches can occur on any thread so the list needs to be threadsafe. We use a simple lock for now since we dont expect too many switches
         TVector<StaticMeshComponent*>                                   m_mobilityUpdateList;                   // A list of all components that switched mobility during this frame, will results in an update of the various spatial data structures next frame
         TVector<StaticMeshComponent*>                                   m_staticMobilityTransformUpdateList;    // A list of all static mobility components that have moved during this frame, will results in an update of the various spatial data structures next frame
+        Math::AABBTree                                                  m_staticMobilityTree;
 
         // Skeletal meshes
         TIDVector<ComponentID, SkeletalMeshComponent*>                  m_registeredSkeletalMeshComponents;

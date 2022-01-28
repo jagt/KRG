@@ -23,7 +23,7 @@ There are no examples of any of the tech supplied unfortunately since I do not h
 
 ## Requirements
 
-* Visual Studio 2019 (latest version since C++17 is required)
+* Visual Studio 2019 (minimum version supported: 16.11)
 * FBX SDK
 
 ## Building Kruger

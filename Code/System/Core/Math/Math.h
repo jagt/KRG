@@ -3,6 +3,7 @@
 #include "System/Core/_Module/API.h"
 #include "System/Core/Serialization/Serialization.h"
 #include "System/Core/Types/IntegralTypes.h"
+#include "System/Core/ThirdParty/pcg/include/pcg_random.hpp"
 #include <math.h>
 #include <float.h>
 #include <stdlib.h>
@@ -13,6 +14,8 @@ namespace KRG
 {
     namespace Math
     {
+        // Note: Math globals do not follow the general coding convention (g_XXX) since they are treated as special types
+
         static constexpr float const Epsilon = 1.0e-06f;
         static constexpr float const LargeEpsilon = 1.0e-04f;
         static constexpr float const HugeEpsilon = 1.0e-02f;
@@ -238,6 +241,51 @@ namespace KRG
         KRG_FORCE_INLINE uint64 RoundUpToNearestMultiple64( uint64 value, uint64 multiple ) { return ( ( value + multiple - 1 ) / multiple ) * multiple; }
         KRG_FORCE_INLINE uint32 RoundDownToNearestMultiple32( uint32 value, uint32 multiple ) { return value - value % multiple; }
         KRG_FORCE_INLINE uint64 RoundDownToNearestMultiple64( uint64 value, uint64 multiple ) { return value - value % multiple; }
+
+        // Random Numbers
+        //-------------------------------------------------------------------------
+
+        // Non-threadsafe random number generator based on PCG
+        class KRG_SYSTEM_CORE_API RNG
+        {
+
+        public:
+
+            RNG(); // Non-deterministic RNG
+            RNG( uint32 seed ); // Deterministic RNG
+
+            inline uint32 GetUInt( uint32 min = 0, uint32 max = 0xFFFFFFFF ) const
+            {
+                KRG_ASSERT( max > min );
+                uint32 range = Min( 0xFFFFFFFE, max - min );
+                return min + m_rng( range + 1 );
+            }
+
+            inline float GetFloat( float min = 0.0f, float max = 1.0f ) const
+            {
+                KRG_ASSERT( max > min );
+                return min + ( ( max - min ) * (float) ldexp( m_rng(), -32 ) );
+            }
+
+        private:
+
+            mutable pcg32 m_rng;
+        };
+
+        // Threadsafe global versions - Use in non-performance critical code
+        //-------------------------------------------------------------------------
+
+        // Get a random unsigned integer value between [min, max]
+        KRG_SYSTEM_CORE_API bool GetRandomBool();
+
+        // Get a random unsigned integer value between [min, max]
+        KRG_SYSTEM_CORE_API uint32 GetRandomUInt( uint32 min = 0, uint32 max = UINT_MAX );
+
+        // Get a random signed integer value between [min, max]
+        KRG_SYSTEM_CORE_API int32 GetRandomInt( int32 min = INT_MIN, int32 max = INT_MAX );
+
+        // Get a random float value between [min, max]
+        KRG_SYSTEM_CORE_API float GetRandomFloat( float min = 0, float max = 1.0f );
     }
 
     //-------------------------------------------------------------------------

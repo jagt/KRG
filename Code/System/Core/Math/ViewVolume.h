@@ -84,6 +84,7 @@ namespace KRG::Math
 
         bool IsValid() const;
 
+        // Set the current view, using KRG world conventions (-Y forward, Z-up)
         void SetView( Vector const& position, Vector const& viewDir, Vector const& upDir );
         void SetDepthRange( FloatRange depthRange );
         void SetViewDimensions( Float2 dimensions );
@@ -150,9 +151,9 @@ namespace KRG::Math
     private:
 
         Vector                  m_viewPosition = Vector::Zero;
-        Vector                  m_viewForwardDirection = Vector( 0, 0, -1, 0 );
-        Vector                  m_viewRightDirection = Vector( 1, 0, 0, 0 );
-        Vector                  m_viewUpDirection = Vector( 0, 1, 0, 0 );
+        Vector                  m_viewForwardDirection = Vector::WorldForward;
+        Vector                  m_viewRightDirection = Vector::WorldRight;
+        Vector                  m_viewUpDirection = Vector::WorldUp;
         Matrix                  m_viewMatrix;                           // The composed view matrix ( -Z forward, Y-up, RH )
         Matrix                  m_projectionMatrix;                     // The projection conversion for this volume // TODO: infinite perspective, inverse Z
         Matrix                  m_viewProjectionMatrix;                 // Cached view projection matrix

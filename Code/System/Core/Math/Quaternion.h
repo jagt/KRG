@@ -21,26 +21,23 @@ namespace KRG
         // Calculate the rotation required to align the source vector to the target vector (shortest path)
         inline static Quaternion FromRotationBetweenNormalizedVectors( Vector const& sourceVector, Vector const& targetVector );
         
+        // Calculate the rotation required to align one vector onto another but also taking account a fallback rotation axis for opposite parallel vectors
+        inline static Quaternion FromRotationBetweenNormalizedVectors( Vector const& sourceVector, Vector const& targetVector, Vector const& fallbackRotationAxis );
+
         // Calculate the rotation required to align the source vector to the target vector (shortest path)
         KRG_FORCE_INLINE static Quaternion FromRotationBetweenVectors( Vector const& sourceVector, Vector const& targetVector ) { return FromRotationBetweenNormalizedVectors( sourceVector.GetNormalized3(), targetVector.GetNormalized3() ); }
-        
-        // Calculate the rotation required to align the forward vector (-Y) to the target vector (shortest path)
-        inline static Quaternion FromNormalizedOrientationVector( Vector const& targetVector ) { return FromRotationBetweenNormalizedVectors( Vector::WorldForward, targetVector ); }
-
-        // Calculate the rotation required to align the forward vector (-Y) to the target vector (shortest path)
-        inline static Quaternion FromOrientationVector( Vector const& targetVector ) { return FromRotationBetweenNormalizedVectors( Vector::WorldForward, targetVector.GetNormalized3() ); }
-
-        // Calculate the rotation required to align one vector onto another but also taking account an up vector
-        inline static Quaternion LookAt( Vector const& originalFrontVector, Vector const& desiredFrontVector, Vector const& upVector );
 
         inline static Quaternion NLerp( Quaternion const& from, Quaternion const& to, float t );
         inline static Quaternion SLerp( Quaternion const& from, Quaternion const& to, float t );
         inline static Quaternion SQuad( Quaternion const& q0, Quaternion const& q1, Quaternion const& q2, Quaternion const& q3, float t );
 
-        // Calculate the delta quaternion needed to rotate 'from' onto 'to'
-        inline static Quaternion Delta( Quaternion const& from, Quaternion const& to ) { return to * from.GetInverse(); }
+        // Calculate the shortest delta quaternion needed to rotate 'from' onto 'to'
+        KRG_FORCE_INLINE static Quaternion Delta( Quaternion const& from, Quaternion const& to ) { return to * from.GetInverse(); }
 
+        // Simple vector dot product between two quaternions
         inline static Vector Dot( Quaternion const& q0, Quaternion const& q1 ) { return Vector::Dot4( q0.AsVector(), q1.AsVector() ); }
+
+        // Calculate the angular distance between two quaternions
         inline static Radians Distance( Quaternion const& q0, Quaternion const& q1 );
 
     public:
@@ -238,14 +235,14 @@ namespace KRG
         m_data = ( rotationX * rotationY * rotationZ ).GetNormalized().m_data;
     }
 
-    inline Quaternion Quaternion::FromRotationBetweenNormalizedVectors( Vector const& v0, Vector const& v1 )
+    inline Quaternion Quaternion::FromRotationBetweenNormalizedVectors( Vector const& from, Vector const& to )
     {
-        KRG_ASSERT( v0.IsNormalized3() && v1.IsNormalized3() );
+        KRG_ASSERT( from.IsNormalized3() && to.IsNormalized3() );
 
         Quaternion result;
 
         // Parallel vectors - return zero rotation
-        Vector const dot = Vector::Dot3( v0, v1 );
+        Vector const dot = Vector::Dot3( from, to );
         if ( dot.IsGreaterThanEqual4( Vector::OneMinusEpsilon ) )
         {
             result = Quaternion::Identity;
@@ -253,12 +250,12 @@ namespace KRG
         // Opposite vectors - return 180 rotation around any orthogonal axis
         else if ( dot.IsLessThanEqual4( Vector::EpsilonMinusOne ) )
         {
-            result = Quaternion( -v0.m_z, v0.m_y, v0.m_x, 0 );
+            result = Quaternion( -from.m_z, from.m_y, from.m_x, 0 );
             result.Normalize();
         }
         else // Calculate quaternion rotation
         {
-            Vector const cross = Vector::Cross3( v0, v1 );
+            Vector const cross = Vector::Cross3( from, to );
             Vector Q = Vector::Select( cross, dot, Vector::Select0001 );
             Q += Vector::Select( Vector::Zero, Q.Length4(), Vector::Select0001 );
             result = Quaternion( Q );
@@ -266,6 +263,32 @@ namespace KRG
         }
 
         return result;
+    }
+
+    inline Quaternion Quaternion::FromRotationBetweenNormalizedVectors( Vector const& from, Vector const& to, Vector const& fallbackRotationAxis )
+    {
+        KRG_ASSERT( from.IsNormalized3() && to.IsNormalized3() );
+
+        Quaternion Q( NoInit );
+
+        Vector rotationAxis = from.Cross3( to ).GetNormalized3();
+        if ( rotationAxis.GetLengthSquared3() == 0 )
+        {
+            rotationAxis = fallbackRotationAxis;
+        }
+
+        float const dot = from.GetDot3( to );
+        if ( dot >= ( 1.0f - Math::Epsilon ) )
+        {
+            Q = Quaternion::Identity;
+        }
+        else
+        {
+            float const angle = Math::ACos( dot );
+            Q = Quaternion( rotationAxis, angle );
+        }
+
+        return Q;
     }
 
     //-------------------------------------------------------------------------
@@ -329,21 +352,6 @@ namespace KRG
         vResult = _mm_add_ps( vResult, Q2Y );
 
         return Quaternion( vResult );
-    }
-
-    inline Quaternion Quaternion::LookAt( Vector const& originalFrontVector, Vector const& desiredFrontVector, Vector const& upVector )
-    {
-        KRG_ASSERT( originalFrontVector.IsNormalized3() && desiredFrontVector.IsNormalized3() );
-
-        Vector rotationAxis = originalFrontVector.Cross3( desiredFrontVector ).GetNormalized3();
-        if ( rotationAxis.GetLengthSquared3() == 0 )
-        {
-            rotationAxis = upVector;
-        }
-
-        float const dot = originalFrontVector.GetDot3( desiredFrontVector );
-        float const angle = Math::ACos( dot );
-        return Quaternion( rotationAxis, angle );
     }
 
     //-------------------------------------------------------------------------

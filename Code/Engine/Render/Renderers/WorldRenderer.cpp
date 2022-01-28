@@ -4,7 +4,7 @@
 #include "Engine/Render/Components/Component_StaticMesh.h"
 #include "Engine/Render/Components/Component_SkeletalMesh.h"
 #include "Engine/Render/Shaders/EngineShaders.h"
-#include "Engine/Render/Systems/WorldSystem_WorldRenderer.h"
+#include "Engine/Render/Systems/WorldSystem_Renderer.h"
 #include "Engine/Core/Entity/Entity.h"
 #include "Engine/Core/Entity/EntityWorldUpdateContext.h"
 #include "Engine/Core/Entity/EntityWorld.h"
@@ -819,11 +819,11 @@ namespace KRG::Render
             }
         }
 
-        int32 const numPointLights = Math::Min( pWorldSystem->m_registeredPointLightComponents.size(), (int32) MAX_PUNCTUAL_LIGHTS );
+        int32 const numPointLights = Math::Min( pWorldSystem->m_registeredPointLightComponents.size(), (int32) s_maxPunctualLights );
         uint32 lightIndex = 0;
         for ( int32 i = 0; i < numPointLights; ++i )
         {
-            KRG_ASSERT( lightIndex < MAX_PUNCTUAL_LIGHTS );
+            KRG_ASSERT( lightIndex < s_maxPunctualLights );
             PointLightComponent* pPointLightComponent = pWorldSystem->m_registeredPointLightComponents[i];
             renderData.m_lightData.m_punctualLights[lightIndex].m_positionInvRadiusSqr = pPointLightComponent->GetLightPosition();
             renderData.m_lightData.m_punctualLights[lightIndex].m_positionInvRadiusSqr.m_w = Math::Sqr( 1.0f / pPointLightComponent->GetLightRadius() );
@@ -833,10 +833,10 @@ namespace KRG::Render
             ++lightIndex;
         }
 
-        int32 const numSpotLights = Math::Min( pWorldSystem->m_registeredSpotLightComponents.size(), (int32) MAX_PUNCTUAL_LIGHTS - numPointLights );
+        int32 const numSpotLights = Math::Min( pWorldSystem->m_registeredSpotLightComponents.size(), (int32) s_maxPunctualLights - numPointLights );
         for ( int32 i = 0; i < numSpotLights; ++i )
         {
-            KRG_ASSERT( lightIndex < MAX_PUNCTUAL_LIGHTS );
+            KRG_ASSERT( lightIndex < s_maxPunctualLights );
             SpotLightComponent* pSpotLightComponent = pWorldSystem->m_registeredSpotLightComponents[i];
             renderData.m_lightData.m_punctualLights[lightIndex].m_positionInvRadiusSqr = pSpotLightComponent->GetLightPosition();
             renderData.m_lightData.m_punctualLights[lightIndex].m_positionInvRadiusSqr.m_w = Math::Sqr( 1.0f / pSpotLightComponent->GetLightRadius() );

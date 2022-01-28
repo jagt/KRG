@@ -127,7 +127,7 @@ namespace KRG::Animation::GraphNodes
                 desiredFacingCS.Normalize3();
 
                 // Get the total delta rotation between our current facing and the desired facing
-                Quaternion deltaRotation = Quaternion::LookAt( Vector::WorldForward, desiredFacingCS, Vector::UnitZ );
+                Quaternion deltaRotation = Quaternion::FromRotationBetweenNormalizedVectors( Vector::WorldForward, desiredFacingCS, Vector::WorldUp );
 
                 // Apply max angular velocity limit
                 float maxAngularVelocity = pSettings->m_maxAngularVelocity;

@@ -321,7 +321,6 @@
     <ClInclude Include="Math\Plane.h" />
     <ClInclude Include="Math\PointSet.h" />
     <ClInclude Include="Math\Quaternion.h" />
-    <ClInclude Include="Math\Random.h" />
     <ClInclude Include="Math\NumericRange.h" />
     <ClInclude Include="Math\Rectangle.h" />
     <ClInclude Include="Math\SIMD.h" />
@@ -495,7 +494,6 @@
     <ClCompile Include="Math\Plane.cpp" />
     <ClCompile Include="Math\PointSet.cpp" />
     <ClCompile Include="Math\Quaternion.cpp" />
-    <ClCompile Include="Math\Random.cpp" />
     <ClCompile Include="Math\Vector.cpp" />
     <ClCompile Include="Math\ViewVolume.cpp" />
     <ClCompile Include="Memory\Memory.cpp" />

@@ -1,12 +1,7 @@
 #pragma once
 
-#include "Engine/Render/_Module/API.h"
-#include "Engine/Core/Entity/EntityWorldSystem.h"
 #include "Engine/Render/IRenderer.h"
 #include "System/Render/RenderDevice.h"
-#include "System/Core/Math/BVH/AABBTree.h"
-#include "System/Core/Types/Event.h"
-#include "System/Core/Systems/ISystem.h"
 
 //-------------------------------------------------------------------------
 
@@ -42,10 +37,7 @@ namespace KRG::Render
             MATERIAL_USE_AO_TEXTURE = ( 1 << 4 ),
         };
 
-        enum
-        {
-            MAX_PUNCTUAL_LIGHTS = 16,
-        };
+        constexpr static int32 const s_maxPunctualLights = 16;
 
         struct PunctualLight
         {
@@ -63,7 +55,7 @@ namespace KRG::Render
             float           m_manualExposure = -1.0f;
             uint32          m_lightingFlags = 0;
             uint32          m_numPunctualLights = 0;
-            PunctualLight   m_punctualLights[MAX_PUNCTUAL_LIGHTS];
+            PunctualLight   m_punctualLights[s_maxPunctualLights];
         };
 
         struct alignas(16) PickingData

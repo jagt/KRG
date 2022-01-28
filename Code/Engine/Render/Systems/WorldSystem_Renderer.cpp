@@ -1,4 +1,4 @@
-#include "WorldSystem_WorldRenderer.h"
+#include "WorldSystem_Renderer.h"
 #include "Engine/Core/Entity/Entity.h"
 #include "Engine/Core/Entity/EntityWorldUpdateContext.h"
 #include "Engine/Render/Components/Component_StaticMesh.h"
@@ -157,6 +157,7 @@ namespace KRG::Render
             else
             {
                 m_staticStaticMeshComponents.Add( pMeshComponent );
+                m_staticMobilityTree.InsertBox( pMeshComponent->GetWorldBounds().GetAABB(), pMeshComponent );
             }
         }
     }
@@ -186,6 +187,7 @@ namespace KRG::Render
             else
             {
                 m_staticStaticMeshComponents.Remove( pMeshComponent->GetID() );
+                m_staticMobilityTree.RemoveBox( pMeshComponent );
             }
         }
 
@@ -255,15 +257,19 @@ namespace KRG::Render
         for ( auto pMeshComponent : m_mobilityUpdateList )
         {
             Mobility const mobility = pMeshComponent->GetMobility();
+
+            // Convert from static to dynamic
             if ( mobility == Mobility::Dynamic )
             {
+                m_staticMobilityTree.RemoveBox( pMeshComponent );
                 m_staticStaticMeshComponents.Remove( pMeshComponent->GetID() );
                 m_dynamicStaticMeshComponents.Add( pMeshComponent );
             }
-            else // Make static
+            else // Convert from dynamic to static
             {
                 m_dynamicStaticMeshComponents.Remove( pMeshComponent->GetID() );
                 m_staticStaticMeshComponents.Add( pMeshComponent );
+                m_staticMobilityTree.InsertBox( pMeshComponent->GetWorldBounds().GetAABB(), pMeshComponent );
             }
         }
 
@@ -278,24 +284,30 @@ namespace KRG::Render
                 KRG_LOG_ERROR( "Render", "Someone moved a mesh with static mobility: %s with entity ID %u. This should not be done!", pMeshComponent->GetName().c_str(), pMeshComponent->GetEntityID().m_ID );
             }
 
-            // Right now there is nothing to do, in future we need to remove from the AABB and re-add to the AABB
+            m_staticMobilityTree.RemoveBox( pMeshComponent );
+            m_staticMobilityTree.InsertBox( pMeshComponent->GetWorldBounds().GetAABB(), pMeshComponent );
         }
 
         //-------------------------------------------------------------------------
         // Culling
         //-------------------------------------------------------------------------
-        // TODO: Broad phase culling
+
+        AABB const viewBounds = ctx.GetViewport()->GetViewVolume().GetAABB();
 
         m_visibleStaticMeshComponents.clear();
-
-        for ( auto pMeshComponent : m_staticStaticMeshComponents )
         {
-            m_visibleStaticMeshComponents.emplace_back( pMeshComponent );
+            KRG_PROFILE_SCOPE_RENDER( "Static Mesh AABB Cull" );
+            m_staticMobilityTree.FindOverlaps( viewBounds, m_visibleStaticMeshComponents );
         }
 
         for ( auto pMeshComponent : m_dynamicStaticMeshComponents )
         {
-            m_visibleStaticMeshComponents.emplace_back( pMeshComponent );
+            KRG_PROFILE_SCOPE_RENDER( "Static Mesh Dynamic Cull" );
+
+            if ( viewBounds.Overlaps( pMeshComponent->GetWorldBounds() ) )
+            {
+                m_visibleStaticMeshComponents.emplace_back( pMeshComponent );
+            }
         }
 
         //-------------------------------------------------------------------------
@@ -304,9 +316,14 @@ namespace KRG::Render
 
         for ( auto const& meshGroup : m_skeletalMeshGroups )
         {
+            KRG_PROFILE_SCOPE_RENDER( "Skeletal Mesh Dynamic Cull" );
+
             for ( auto pMeshComponent : meshGroup.m_components )
             {
-                m_visibleSkeletalMeshComponents.emplace_back( pMeshComponent );
+                if ( viewBounds.Overlaps( pMeshComponent->GetWorldBounds() ) )
+                {
+                    m_visibleSkeletalMeshComponents.emplace_back( pMeshComponent );
+                }
             }
         }
 

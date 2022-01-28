@@ -1,7 +1,7 @@
 #include "AIAction_Idle.h"
 #include "Game/Core/AI/Behaviors/AIBehavior.h"
 #include "Game/Core/AI/GraphControllers/AIGraphController_Locomotion.h"
-#include "System/Core/Math/Random.h"
+#include "System/Core/Math/Math.h"
 
 //-------------------------------------------------------------------------
 
