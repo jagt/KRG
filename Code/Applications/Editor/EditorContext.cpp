@@ -1,5 +1,5 @@
 #include "EditorContext.h"
-#include "RenderingSystem.h"
+#include "Applications/EngineShared/RenderingSystem.h"
 #include "Tools/Entity/Workspaces/Workspace_MapEditor.h"
 #include "Tools/Entity/Workspaces/Workspace_GamePreviewer.h"
 #include "Tools/Entity/Workspaces/Workspace_EntityCollectionEditor.h"

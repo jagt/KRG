@@ -2,7 +2,7 @@
 #pragma once
 
 #include <windows.h>
-#include "Win32/Application_Win32.h"
+#include "Applications/Shared/Win32/Application_Win32.h"
 #include "Applications/EngineShared/Engine.h"
 #include "Engine/Core/ToolsUI/EngineToolsUI.h"
 

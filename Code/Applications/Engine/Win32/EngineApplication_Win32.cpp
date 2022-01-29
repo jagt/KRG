@@ -1,7 +1,7 @@
 #ifdef _WIN32
 #include "Resource.h"
 #include "EngineApplication_win32.h"
-#include "Engine_Win32.h"
+#include "Applications/EngineShared/Engine_Win32.h"
 #include "iniparser/krg_ini.h"
 #include "Applications/Shared/cmdParser/krg_cmdparser.h"
 #include "Applications/Shared/Win32/SharedHelpers_Win32.h"

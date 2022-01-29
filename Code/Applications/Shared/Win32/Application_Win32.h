@@ -3,7 +3,7 @@
 
 #include "System/Core/Types/IntegralTypes.h"
 #include "System/Core/Types/String.h"
-#include "ApplicationGlobalState.h"
+#include "Applications/Shared/ApplicationGlobalState.h"
 #include "System/Core/Math/Math.h"
 #include <windows.h>
 

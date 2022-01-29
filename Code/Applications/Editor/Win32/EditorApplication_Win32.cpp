@@ -1,5 +1,5 @@
 #include "EditorApplication_Win32.h"
-#include "Engine_Win32.h"
+#include "Applications/EngineShared/Engine_Win32.h"
 #include "Resource.h"
 #include "iniparser/krg_ini.h"
 #include "Applications/Shared/cmdParser/krg_cmdparser.h"

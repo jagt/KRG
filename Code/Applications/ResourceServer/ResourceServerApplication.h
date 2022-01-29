@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ApplicationGlobalState.h"
+#include "Applications/Shared/ApplicationGlobalState.h"
 #include "ResourceServer.h"
 #include "ResourceServerUI.h"
 #include "Engine/Render/Renderers/ImguiRenderer.h"
@@ -11,7 +11,7 @@
 #include "System/Core/Types/String.h"
 #include "System/Core/Types/IntegralTypes.h"
 #include "Engine/Core/Update/UpdateContext.h"
-#include "Win32/Application_Win32.h"
+#include "Applications/Shared/Win32/Application_Win32.h"
 #include <shellapi.h>
 
 //-------------------------------------------------------------------------
